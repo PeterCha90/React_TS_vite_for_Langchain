@@ -1,0 +1,27 @@
+name: Deploy React to AWS
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Generate deployment package
+        run: zip -r react.zip . -x '*.git*'
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          application_name: test
+          environment_name: Test-env
+          version_label: ${{ github.sha }}
+          existing_bucket_name: elasticbeanstalk-ap-northeast-2-532504198153
+          region: ap-northeast-2
+          deployment_package: react.zi
